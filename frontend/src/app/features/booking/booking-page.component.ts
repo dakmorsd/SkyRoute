@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -26,6 +26,7 @@ type PassengerGroup = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BookingPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly formBuilder = inject(FormBuilder);
   private readonly store = inject(Store);
   private readonly router = inject(Router);
@@ -55,18 +56,19 @@ export class BookingPageComponent implements OnInit {
 
     this.store
       .select(selectSession)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(session => {
         this.userEmail = session?.user.email ?? '';
       });
 
     this.store
       .select(selectSelectedOffer)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(offer => {
         this.selectedOffer = offer;
 
         if (!offer) {
+          this.router.navigate(['/']);
           return;
         }
 

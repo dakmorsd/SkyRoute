@@ -1,3 +1,44 @@
 :host {
-  display: block;
+  display: grid;
+  gap: 36px;
+}
+
+.hero-banner__content,
+.workspace-grid__primary,
+.workspace-grid__secondary {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+
+.hero-banner__content {
+  padding-right: clamp(0px, 2vw, 20px);
+}
+
+.hero-banner__side-panel {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-height: 100%;
+}
+
+.workspace-grid__primary,
+.workspace-grid__secondary {
+  min-width: 0;
+}
+
+.feedback-card {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .hero-banner__content,
+  .workspace-grid__primary,
+  .workspace-grid__secondary {
+    gap: 18px;
+  }
+
+  .hero-banner__content {
+    padding-right: 0;
+  }
 }
