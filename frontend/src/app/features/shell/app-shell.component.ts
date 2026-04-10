@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 
 import { ClientStorageService } from '../../core/services/client-storage.service';
 import { AuthActions, selectSession } from '../../store/auth.store';
-import { BookingActions } from '../../store/booking.store';
+import { BookingActions, selectSelectedOffer } from '../../store/booking.store';
 
 @Component({
   selector: 'app-shell',
@@ -20,6 +20,7 @@ export class AppShellComponent implements OnInit {
   private readonly storage = inject(ClientStorageService);
 
   readonly session$ = this.store.select(selectSession);
+  readonly selectedOffer$ = this.store.select(selectSelectedOffer);
 
   ngOnInit(): void {
     this.store.dispatch(AuthActions.hydrateSession({ session: this.storage.loadAuthSession() }));

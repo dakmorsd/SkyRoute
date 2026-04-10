@@ -42,9 +42,9 @@ export interface SearchCriteria {
 }
 
 export interface PriceBreakdown {
-  perPassenger: number;
+  perPassengerPrice: number;
   passengerCount: number;
-  total: number;
+  totalPrice: number;
   currency: string;
 }
 

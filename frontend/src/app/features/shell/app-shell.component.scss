@@ -1,3 +1,9 @@
 :host {
   display: block;
 }
+
+.nav-link--disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.03);
+}

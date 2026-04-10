@@ -87,9 +87,9 @@ export const selectSortedOffers = createSelector(selectOffers, selectSort, (offe
 
   switch (sort) {
     case 'priceAsc':
-      return sorted.sort((left, right) => left.pricing.total - right.pricing.total);
+      return sorted.sort((left, right) => left.pricing.totalPrice - right.pricing.totalPrice);
     case 'priceDesc':
-      return sorted.sort((left, right) => right.pricing.total - left.pricing.total);
+      return sorted.sort((left, right) => right.pricing.totalPrice - left.pricing.totalPrice);
     case 'durationAsc':
       return sorted.sort((left, right) => left.durationMinutes - right.durationMinutes);
     case 'departureAsc':
