@@ -22,8 +22,27 @@ builder.Services.AddCors(options =>
 {
 	options.AddPolicy("Frontend", policy =>
 	{
-		policy.WithOrigins("http://localhost:4200")
-			.AllowAnyHeader()
+		if (builder.Environment.IsDevelopment())
+		{
+			policy.SetIsOriginAllowed(static origin =>
+			{
+				if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+				{
+					return false;
+				}
+
+				return (string.Equals(uri.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+					&& (string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase)
+						|| string.Equals(uri.Host, "127.0.0.1", StringComparison.OrdinalIgnoreCase));
+			});
+		}
+		else
+		{
+			policy.WithOrigins("http://localhost:4200");
+		}
+
+		policy.AllowAnyHeader()
 			.AllowAnyMethod();
 	});
 });
