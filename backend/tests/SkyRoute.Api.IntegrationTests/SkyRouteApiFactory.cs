@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SkyRoute.Application.Interfaces;
 using SkyRoute.Infrastructure.Persistence;
+using SkyRoute.Infrastructure.Providers;
 
 namespace SkyRoute.Api.IntegrationTests;
 
@@ -24,6 +26,27 @@ public sealed class SkyRouteApiFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<SkyRouteDbContext>(options =>
                 options.UseInMemoryDatabase(_databaseName));
+
+            services.RemoveAll<GlobalAirProviderClient>();
+            services.RemoveAll<BudgetWingsProviderClient>();
+            services.RemoveAll<IFlightProviderClient>();
+
+            services.AddScoped(sp =>
+            {
+                var client = CreateClient();
+                client.BaseAddress = new Uri(client.BaseAddress!, "mock/globalair/");
+                return new GlobalAirProviderClient(client);
+            });
+
+            services.AddScoped(sp =>
+            {
+                var client = CreateClient();
+                client.BaseAddress = new Uri(client.BaseAddress!, "mock/budgetwings/");
+                return new BudgetWingsProviderClient(client);
+            });
+
+            services.AddScoped<IFlightProviderClient>(sp => sp.GetRequiredService<GlobalAirProviderClient>());
+            services.AddScoped<IFlightProviderClient>(sp => sp.GetRequiredService<BudgetWingsProviderClient>());
         });
     }
 }

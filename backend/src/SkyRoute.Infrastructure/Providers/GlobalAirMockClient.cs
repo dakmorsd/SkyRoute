@@ -1,4 +1,6 @@
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using SkyRoute.Application.Interfaces;
 using SkyRoute.Application.Models;
 
@@ -11,6 +13,10 @@ namespace SkyRoute.Infrastructure.Providers;
 /// </summary>
 public sealed class GlobalAirProviderClient(HttpClient httpClient) : IFlightProviderClient
 {
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
     public string ProviderCode => "GLOBAL_AIR";
 
     public async Task<IReadOnlyCollection<ProviderFlightOffer>> SearchAsync(
@@ -29,10 +35,10 @@ public sealed class GlobalAirProviderClient(HttpClient httpClient) : IFlightProv
             context.RouteType,
         };
 
-        var response = await httpClient.PostAsJsonAsync("search", request, cancellationToken);
+        var response = await httpClient.PostAsJsonAsync("search", request, JsonOptions, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var body = await response.Content.ReadFromJsonAsync<ProviderApiSearchResponse>(cancellationToken)
+        var body = await response.Content.ReadFromJsonAsync<ProviderApiSearchResponse>(JsonOptions, cancellationToken)
             ?? throw new InvalidOperationException("GlobalAir API returned an empty response.");
 
         return body.Flights.Select(flight => new ProviderFlightOffer(

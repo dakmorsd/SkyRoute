@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SkyRoute.Application.Models;
 using SkyRoute.Domain.Entities;
 using SkyRoute.Domain.Services;
+using SkyRoute.Infrastructure.Providers;
 
 namespace SkyRoute.Api.Controllers.MockProviders;
 
