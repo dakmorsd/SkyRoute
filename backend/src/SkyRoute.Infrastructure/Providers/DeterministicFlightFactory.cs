@@ -6,7 +6,7 @@ using SkyRoute.Domain.Services;
 
 namespace SkyRoute.Infrastructure.Providers;
 
-internal static class DeterministicFlightFactory
+public static class DeterministicFlightFactory
 {
     public static IReadOnlyCollection<ProviderFlightOffer> CreateOffers(
         FlightProviderSearchContext context,

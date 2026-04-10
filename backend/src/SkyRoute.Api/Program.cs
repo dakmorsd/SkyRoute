@@ -78,6 +78,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+var providerBaseUrl = builder.Configuration["Urls"]
+    ?? builder.Configuration.GetSection("Kestrel:Endpoints:Http:Url").Value
+    ?? "http://localhost:5279";
+builder.Services.AddProviderClients(providerBaseUrl);
+
 var app = builder.Build();
 
 app.UseExceptionHandler(errorApp =>

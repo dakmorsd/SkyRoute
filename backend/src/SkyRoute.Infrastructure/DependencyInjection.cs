@@ -35,10 +35,33 @@ public static class DependencyInjection
 
         services.AddSingleton<GlobalAirPricingStrategy>();
         services.AddSingleton<BudgetWingsPricingStrategy>();
-        services.AddScoped<IFlightProviderClient, GlobalAirMockClient>();
-        services.AddScoped<IFlightProviderClient, BudgetWingsMockClient>();
 
         services.AddScoped<SkyRouteDataSeeder>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the airline provider HTTP clients.
+    /// Called from Program.cs after the server URLs are known, so each client
+    /// points to the corresponding mock provider endpoint hosted in the same process.
+    /// </summary>
+    public static IServiceCollection AddProviderClients(this IServiceCollection services, string serverBaseUrl)
+    {
+        var baseUri = serverBaseUrl.TrimEnd('/');
+
+        services.AddHttpClient<GlobalAirProviderClient>(client =>
+        {
+            client.BaseAddress = new Uri($"{baseUri}/mock/globalair/");
+        });
+
+        services.AddHttpClient<BudgetWingsProviderClient>(client =>
+        {
+            client.BaseAddress = new Uri($"{baseUri}/mock/budgetwings/");
+        });
+
+        services.AddScoped<IFlightProviderClient>(sp => sp.GetRequiredService<GlobalAirProviderClient>());
+        services.AddScoped<IFlightProviderClient>(sp => sp.GetRequiredService<BudgetWingsProviderClient>());
 
         return services;
     }
