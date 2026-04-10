@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -18,6 +18,7 @@ import { AuthFormComponent } from './auth-form.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthPageComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly store = inject(Store);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -37,7 +38,7 @@ export class AuthPageComponent implements OnInit {
       .select(selectSession)
       .pipe(
         filter((session): session is AuthSession => session !== null),
-        takeUntilDestroyed(),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
         this.router.navigateByUrl(this.redirectUrl);

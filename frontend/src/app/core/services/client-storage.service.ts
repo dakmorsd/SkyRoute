@@ -41,14 +41,17 @@ export class ClientStorageService {
   }
 
   loadSelectedOffer(): FlightOffer | null {
-    const raw = this.readFromSessionStorage(this.offerStorageKey);
+    const raw = this.readFromLocalStorage(this.offerStorageKey) ?? this.readFromSessionStorage(this.offerStorageKey);
 
     if (!raw) {
       return null;
     }
 
     try {
-      return JSON.parse(raw) as FlightOffer;
+      const offer = JSON.parse(raw) as FlightOffer;
+      this.writeToLocalStorage(this.offerStorageKey, raw);
+      this.writeToSessionStorage(this.offerStorageKey, raw);
+      return offer;
     } catch {
       this.clearSelectedOffer();
       return null;
@@ -56,10 +59,14 @@ export class ClientStorageService {
   }
 
   saveSelectedOffer(offer: FlightOffer): void {
-    this.writeToSessionStorage(this.offerStorageKey, JSON.stringify(offer));
+    const serializedOffer = JSON.stringify(offer);
+
+    this.writeToLocalStorage(this.offerStorageKey, serializedOffer);
+    this.writeToSessionStorage(this.offerStorageKey, serializedOffer);
   }
 
   clearSelectedOffer(): void {
+    this.removeFromLocalStorage(this.offerStorageKey);
     this.removeFromSessionStorage(this.offerStorageKey);
   }
 
