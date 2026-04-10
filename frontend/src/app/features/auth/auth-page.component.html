@@ -1,0 +1,50 @@
+<section class="auth-layout">
+  <article class="card auth-layout__intro">
+    <span class="eyebrow">Protected Booking</span>
+    <h1>Authenticate only when you are ready to ticket the itinerary.</h1>
+    <p>
+      Public search stays open. Booking requires JWT authentication, a selected offer token, and passenger identities
+      that
+      match the route type.
+    </p>
+
+    <div class="summary-chip-row">
+      <span class="summary-chip">JWT Secured</span>
+      <span class="summary-chip">Offer Token Signed</span>
+      <span class="summary-chip">Regex Passenger Validation</span>
+    </div>
+
+    <div class="card card--nested demo-credentials">
+      <span class="status-pill">Demo Access</span>
+      <strong>demo&#64;skyroute.local</strong>
+      <span>Travel123!</span>
+      <p class="muted-text">Use the seeded account or create a new one.</p>
+    </div>
+  </article>
+
+  <article class="card auth-layout__panel">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">Account Access</span>
+        <h2 class="section-title">{{ mode === 'register' ? 'Create your traveler profile' : 'Sign in to continue' }}
+        </h2>
+      </div>
+    </div>
+
+    <div class="segmented segmented--full" role="tablist" aria-label="Authentication mode">
+      <button type="button" class="segmented__button" [class.is-active]="mode === 'login'"
+        (click)="setMode('login')">Sign In</button>
+      <button type="button" class="segmented__button" [class.is-active]="mode === 'register'"
+        (click)="setMode('register')">Create Account</button>
+    </div>
+
+    <app-auth-form [mode]="mode" [pending]="(status$ | async) === 'submitting'" [error]="error$ | async"
+      (submitted)="submit($event)" />
+
+    <p class="muted-text muted-text--small">
+      After authentication you will return to {{ redirectUrl === '/checkout' ? 'checkout' : 'the search workspace' }}.
+    </p>
+
+    <a class="button button--ghost button--wide" routerLink="/">Back To Search</a>
+  </article>
+</section>

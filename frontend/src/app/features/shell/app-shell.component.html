@@ -1,0 +1,45 @@
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand-block">
+      <a class="brand" routerLink="/">
+        <span class="brand__mark">SR</span>
+        <span>
+          <strong>SkyRoute</strong>
+          <small>Enterprise Flight Booking Demo</small>
+        </span>
+      </a>
+
+      <nav class="topbar__nav">
+        <a class="nav-link" routerLink="/" routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }">Search</a>
+        <a class="nav-link" routerLink="/checkout" routerLinkActive="is-active">Booking</a>
+      </nav>
+    </div>
+
+    <div class="topbar__actions">
+      @if (session$ | async; as session) {
+      <div class="account-pill">
+        <span class="status-pill status-pill--success">Authenticated</span>
+        <div>
+          <strong>{{ session.user.fullName }}</strong>
+          <small>{{ session.user.email }}</small>
+        </div>
+      </div>
+
+      <button type="button" class="button button--ghost" (click)="logout()">Sign Out</button>
+      } @else {
+      <a class="button button--ghost" routerLink="/auth">Sign In</a>
+      <a class="button" routerLink="/auth" [queryParams]="{ mode: 'register' }">Create Account</a>
+      }
+    </div>
+  </header>
+
+  <main class="shell-main">
+    <router-outlet />
+  </main>
+
+  <footer class="footer-strip">
+    <span>Angular 18 + NgRx + .NET 10 Clean Architecture + PostgreSQL</span>
+    <span>Seeded demo user: demo&#64;skyroute.local / Travel123!</span>
+  </footer>
+</div>

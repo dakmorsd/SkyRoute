@@ -1,0 +1,74 @@
+<section class="card card--form">
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow">Search Workspace</span>
+      <h2 class="section-title">Find your best route</h2>
+    </div>
+    @if (loading) {
+    <span class="status-pill status-pill--warning">Loading Airports</span>
+    }
+  </div>
+
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="submit()">
+    <label class="field">
+      <span class="field__label">Origin</span>
+      <select class="field__input" formControlName="originAirportCode">
+        <option value="">Select airport</option>
+        @for (airport of airports; track airport.code) {
+        <option [value]="airport.code">{{ airport.city }} ({{ airport.code }}) · {{ airport.countryName }}</option>
+        }
+      </select>
+      @if (form.controls.originAirportCode.touched && form.controls.originAirportCode.invalid) {
+      <span class="field__error">Origin airport is required.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">Destination</span>
+      <select class="field__input" formControlName="destinationAirportCode">
+        <option value="">Select airport</option>
+        @for (airport of airports; track airport.code) {
+        <option [value]="airport.code">{{ airport.city }} ({{ airport.code }}) · {{ airport.countryName }}</option>
+        }
+      </select>
+      @if (form.controls.destinationAirportCode.touched && form.controls.destinationAirportCode.invalid) {
+      <span class="field__error">Destination airport is required.</span>
+      }
+      @if (sameAirportError) {
+      <span class="field__error">Origin and destination must be different.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">Departure Date</span>
+      <input class="field__input" type="date" [min]="today" formControlName="departureDate" />
+      @if (form.controls.departureDate.touched && form.controls.departureDate.invalid) {
+      <span class="field__error">Choose a valid future date.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">Passengers</span>
+      <select class="field__input" formControlName="passengerCount">
+        @for (count of passengerCounts; track count) {
+        <option [ngValue]="count">{{ count }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span class="field__label">Cabin Class</span>
+      <select class="field__input" formControlName="cabinClass">
+        @for (cabinClass of cabinClasses; track cabinClass) {
+        <option [ngValue]="cabinClass">{{ cabinClass }}</option>
+        }
+      </select>
+    </label>
+
+    <div class="button-row button-row--full">
+      <button type="submit" class="button button--wide" [disabled]="loading || submitting">
+        {{ submitting ? 'Searching Flights...' : 'Search Flights' }}
+      </button>
+    </div>
+  </form>
+</section>

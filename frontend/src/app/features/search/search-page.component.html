@@ -1,0 +1,83 @@
+<section class="hero-banner">
+  <div class="hero-banner__content">
+    <span class="eyebrow">SkyRoute Developer Challenge</span>
+    <h1>Flight shopping with clean architecture on the backend and deterministic pricing on the edge.</h1>
+    <p>
+      Search routes across South America, compare provider pricing rules, and complete a protected booking flow with
+      route-aware document validation.
+    </p>
+
+    <div class="summary-chip-row">
+      <span class="summary-chip">GlobalAir +15% surcharge</span>
+      <span class="summary-chip">BudgetWings -10% with floor price</span>
+      <span class="summary-chip">Frontend Sorting Only</span>
+    </div>
+  </div>
+
+  <aside class="card hero-banner__side-panel">
+    @if (session$ | async; as session) {
+    <span class="status-pill status-pill--success">Ready To Book</span>
+    <h2 class="section-title section-title--small">Welcome back, {{ session.user.fullName }}</h2>
+    <p class="muted-text">You are authenticated and can jump directly from search results to protected booking.</p>
+    } @else {
+    <span class="status-pill status-pill--accent">Protected Checkout</span>
+    <h2 class="section-title section-title--small">Authentication is optional until booking</h2>
+    <p class="muted-text">Run the full public search experience first, then sign in only when you commit to a flight.
+    </p>
+    <a class="button button--wide" routerLink="/auth" [queryParams]="{ mode: 'register' }">Create Account</a>
+    }
+  </aside>
+</section>
+
+<section class="workspace-grid">
+  <div class="workspace-grid__primary">
+    <app-search-form [airports]="(airports$ | async) ?? []" [loading]="(airportsStatus$ | async) === 'loading'"
+      [submitting]="(searchStatus$ | async) === 'loading'" [initialCriteria]="criteria$ | async"
+      (searchSubmitted)="search($event)" />
+
+    @if (airportsError$ | async; as airportsError) {
+    <article class="card feedback-card feedback-card--error">
+      <strong>Airport catalog unavailable</strong>
+      <p>{{ airportsError }}</p>
+    </article>
+    }
+  </div>
+
+  <div class="workspace-grid__secondary">
+    @if ((searchStatus$ | async) === 'loading') {
+    <article class="card loader-card">
+      <div class="loader-bar"></div>
+      <div class="loader-bar loader-bar--short"></div>
+      <div class="loader-grid">
+        <div class="loader-card__block"></div>
+        <div class="loader-card__block"></div>
+        <div class="loader-card__block"></div>
+      </div>
+    </article>
+    } @else {
+    @if (searchError$ | async; as searchError) {
+    <article class="card feedback-card feedback-card--error">
+      <strong>Search failed</strong>
+      <p>{{ searchError }}</p>
+    </article>
+    } @else if (((sortedOffers$ | async) ?? []).length > 0) {
+    <article class="card card--results">
+      <app-sort-toolbar [sort]="(sort$ | async) ?? 'recommended'" [resultCount]="((sortedOffers$ | async) ?? []).length"
+        (sortChanged)="changeSort($event)" />
+
+      <app-offers-list [offers]="(sortedOffers$ | async) ?? []" [airports]="(airports$ | async) ?? []"
+        [isAuthenticated]="(isAuthenticated$ | async) ?? false" (offerSelected)="selectOffer($event)" />
+    </article>
+    } @else {
+    <article class="card empty-state">
+      <span class="status-pill">Search Ready</span>
+      <h2 class="section-title">No flights yet</h2>
+      <p class="muted-text">
+        Choose a route, departure date, passengers, and cabin class. Results stay unsorted until the client applies the
+        selected ranking.
+      </p>
+    </article>
+    }
+    }
+  </div>
+</section>

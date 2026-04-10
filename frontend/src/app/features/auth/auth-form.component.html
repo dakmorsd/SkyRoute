@@ -1,0 +1,38 @@
+<form class="form-stack" [formGroup]="form" (ngSubmit)="submit()">
+  @if (error) {
+  <div class="feedback-card feedback-card--error feedback-card--inline">
+    <strong>Authentication failed</strong>
+    <p>{{ error }}</p>
+  </div>
+  }
+
+  @if (mode === 'register') {
+  <label class="field">
+    <span class="field__label">Full Name</span>
+    <input class="field__input" type="text" formControlName="fullName" placeholder="Jane Traveler" />
+    @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+    <span class="field__error">Enter your full name.</span>
+    }
+  </label>
+  }
+
+  <label class="field">
+    <span class="field__label">Email</span>
+    <input class="field__input" type="email" formControlName="email" placeholder="you&#64;example.com" />
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+    <span class="field__error">Enter a valid email address.</span>
+    }
+  </label>
+
+  <label class="field">
+    <span class="field__label">Password</span>
+    <input class="field__input" type="password" formControlName="password" placeholder="Minimum 8 characters" />
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+    <span class="field__error">Password must be at least 8 characters.</span>
+    }
+  </label>
+
+  <button type="submit" class="button button--wide" [disabled]="pending">
+    {{ pending ? 'Submitting...' : mode === 'register' ? 'Create Account' : 'Sign In' }}
+  </button>
+</form>

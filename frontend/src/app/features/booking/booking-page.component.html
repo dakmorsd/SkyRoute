@@ -1,0 +1,140 @@
+@if (confirmation$ | async; as confirmation) {
+<section class="success-panel card">
+  <span class="status-pill status-pill--success">Booking Confirmed</span>
+  <h1>{{ confirmation.bookingReferenceCode }}</h1>
+  <p class="muted-text">Your itinerary was stored successfully and the booking reference is ready to share.</p>
+
+  <div class="summary-grid">
+    <div class="summary-stat">
+      <span>Provider</span>
+      <strong>{{ confirmation.providerCode }}</strong>
+    </div>
+    <div class="summary-stat">
+      <span>Flight</span>
+      <strong>{{ confirmation.flightNumber }}</strong>
+    </div>
+    <div class="summary-stat">
+      <span>Passengers</span>
+      <strong>{{ confirmation.passengerCount }}</strong>
+    </div>
+    <div class="summary-stat">
+      <span>Total</span>
+      <strong>{{ confirmation.totalPrice | currency:'USD':'symbol':'1.2-2' }}</strong>
+    </div>
+  </div>
+
+  <div class="button-row">
+    <button type="button" class="button" (click)="startOver()">Search Another Flight</button>
+  </div>
+</section>
+} @else if (selectedOffer) {
+<section class="booking-layout">
+  <article class="card booking-layout__summary">
+    <span class="eyebrow">Selected Offer</span>
+    <h1>{{ selectedOffer.providerName }} · {{ selectedOffer.flightNumber }}</h1>
+    <p class="muted-text">
+      {{ selectedOffer.originAirportCode }} → {{ selectedOffer.destinationAirportCode }} · {{ selectedOffer.routeType }}
+      route · {{ selectedOffer.cabinClass }}
+    </p>
+
+    <div class="summary-grid">
+      <div class="summary-stat">
+        <span>Departure</span>
+        <strong>{{ selectedOffer.departureTimeUtc | date:'EEE, MMM d · HH:mm' }} UTC</strong>
+      </div>
+      <div class="summary-stat">
+        <span>Arrival</span>
+        <strong>{{ selectedOffer.arrivalTimeUtc | date:'EEE, MMM d · HH:mm' }} UTC</strong>
+      </div>
+      <div class="summary-stat">
+        <span>Per Passenger</span>
+        <strong>{{ selectedOffer.pricing.perPassenger | currency:'USD':'symbol':'1.2-2' }}</strong>
+      </div>
+      <div class="summary-stat">
+        <span>Total Price</span>
+        <strong>{{ selectedOffer.pricing.total | currency:'USD':'symbol':'1.2-2' }}</strong>
+      </div>
+    </div>
+
+    <div class="card card--nested">
+      <span class="status-pill"
+        [class.status-pill--accent]="selectedOffer.routeType === 'International'">{{ documentRule.label }}</span>
+      <strong>{{ documentRule.placeholder }}</strong>
+      <p class="muted-text">{{ documentRule.hint }}</p>
+    </div>
+  </article>
+
+  <article class="card booking-layout__form-panel">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">Passenger Manifest</span>
+        <h2 class="section-title">Complete traveler details</h2>
+      </div>
+      <span class="status-pill">{{ selectedOffer.pricing.passengerCount }} passenger{{
+        selectedOffer.pricing.passengerCount > 1 ? 's' : '' }}</span>
+    </div>
+
+    @if (error$ | async; as error) {
+    <div class="feedback-card feedback-card--error feedback-card--inline">
+      <strong>Booking failed</strong>
+      <p>{{ error }}</p>
+    </div>
+    }
+
+    <form class="form-stack" [formGroup]="form" (ngSubmit)="submit()">
+      <div formArrayName="passengers" class="passenger-list">
+        @for (passengerGroup of passengers.controls; track $index) {
+        <div class="passenger-card" [formGroupName]="$index">
+          <div class="section-heading section-heading--compact">
+            <div>
+              <span class="eyebrow">Traveler {{ $index + 1 }}</span>
+              <h3 class="section-title section-title--small">Passenger details</h3>
+            </div>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Full Name</span>
+            <input class="field__input" type="text" formControlName="fullName" placeholder="Traveler full name" />
+            @if (passengerGroup.controls.fullName.touched && passengerGroup.controls.fullName.invalid) {
+            <span class="field__error">Full name is required.</span>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field__label">Email</span>
+            <input class="field__input" type="email" formControlName="email" placeholder="traveler&#64;example.com" />
+            @if (passengerGroup.controls.email.touched && passengerGroup.controls.email.invalid) {
+            <span class="field__error">A valid email address is required.</span>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field__label">{{ documentRule.label }}</span>
+            <input class="field__input" type="text" formControlName="documentNumber"
+              [placeholder]="documentRule.placeholder" />
+            <span class="field__hint">{{ documentRule.hint }}</span>
+            @if (passengerGroup.controls.documentNumber.touched && passengerGroup.controls.documentNumber.invalid) {
+            <span class="field__error">{{ documentRule.label }} format is invalid.</span>
+            }
+          </label>
+        </div>
+        }
+      </div>
+
+      <div class="button-row">
+        <button type="button" class="button button--ghost" (click)="startOver()">Back To Search</button>
+        <button type="submit" class="button" [disabled]="(status$ | async) === 'submitting'">
+          {{ (status$ | async) === 'submitting' ? 'Confirming Booking...' : 'Confirm Booking' }}
+        </button>
+      </div>
+    </form>
+  </article>
+</section>
+} @else {
+<section class="card empty-state">
+  <span class="status-pill">Missing Offer</span>
+  <h1 class="section-title">No offer selected</h1>
+  <p class="muted-text">Return to search, choose a flight, and continue to the protected booking flow.</p>
+  <a class="button" routerLink="/">Back To Search</a>
+</section>
+}

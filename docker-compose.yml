@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: skyroute-postgres
+    environment:
+      POSTGRES_DB: skyroute
+      POSTGRES_USER: skyroute
+      POSTGRES_PASSWORD: skyroute_dev_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - skyroute-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skyroute -d skyroute"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  skyroute-postgres-data:

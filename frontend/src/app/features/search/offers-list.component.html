@@ -1,0 +1,55 @@
+<div class="results-stack">
+  @for (offer of offers; track offer.offerToken) {
+  <article class="card offer-card">
+    <div class="offer-card__header">
+      <div>
+        <div class="offer-card__provider">
+          <strong>{{ offer.providerName }}</strong>
+          <span class="status-pill" [class.status-pill--accent]="offer.routeType === 'International'">
+            {{ offer.routeType }}
+          </span>
+        </div>
+        <p class="muted-text">{{ offer.flightNumber }} · {{ offer.cabinClass }}</p>
+      </div>
+
+      <div class="price-cluster">
+        <strong>{{ offer.pricing.total | currency: offer.pricing.currency : 'symbol' : '1.2-2' }}</strong>
+        <span>{{ offer.pricing.perPassenger | currency: offer.pricing.currency : 'symbol' : '1.2-2' }} per
+          passenger</span>
+      </div>
+    </div>
+
+    <div class="timeline-grid">
+      <div>
+        <span class="timeline-grid__label">Outbound</span>
+        <strong>{{ describeAirport(offer.originAirportCode) }}</strong>
+        <small>{{ offer.departureTimeUtc | date: 'EEE, MMM d · HH:mm' }} UTC</small>
+      </div>
+
+      <div class="timeline-grid__center">
+        <strong>{{ offer.durationMinutes }} min</strong>
+        <span>{{ offer.originAirportCode }} → {{ offer.destinationAirportCode }}</span>
+      </div>
+
+      <div>
+        <span class="timeline-grid__label">Arrival</span>
+        <strong>{{ describeAirport(offer.destinationAirportCode) }}</strong>
+        <small>{{ offer.arrivalTimeUtc | date: 'EEE, MMM d · HH:mm' }} UTC</small>
+      </div>
+    </div>
+
+    <div class="offer-card__footer">
+      <div class="summary-chip-row">
+        <span class="summary-chip">{{ offer.pricing.passengerCount }} Passenger{{ offer.pricing.passengerCount > 1 ? 's'
+          : '' }}</span>
+        <span class="summary-chip">Sorted in Frontend</span>
+        <span class="summary-chip">Tokenized Offer</span>
+      </div>
+
+      <button type="button" class="button" (click)="offerSelected.emit(offer)">
+        {{ isAuthenticated ? 'Continue To Booking' : 'Sign In To Book' }}
+      </button>
+    </div>
+  </article>
+  }
+</div>

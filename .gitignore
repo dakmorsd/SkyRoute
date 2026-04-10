@@ -1,0 +1,10 @@
+/.vscode
+
+# .NET build artifacts
+**/bin/
+**/obj/
+**/TestResults/
+
+# Common compiled output
+**/coverage/
+/SkyRoute Word XML Document.xml
